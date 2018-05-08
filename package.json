@@ -4,7 +4,8 @@
   "description": "A basic wrapper to use dynamoDb in Nutshell serverless apps.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "preinstall": "bash scripts/ssh-setup.sh",
+    "postinstall": "bash scripts/ssh-cleanup.sh"
   },
   "keywords": [
     "dynamodb",
