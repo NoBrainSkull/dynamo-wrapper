@@ -1,4 +1,3 @@
-// TODO: This could be an external module and doesnt really belongs in source.
 import AWSDK from 'aws-sdk'
 
 const dynamoDb = new AWSDK.DynamoDB.DocumentClient()
