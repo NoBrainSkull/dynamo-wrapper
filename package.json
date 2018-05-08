@@ -1,11 +1,9 @@
 {
-  "name": "@nutshell/dynamo-wrapper",
+  "name": "dynamo-wrapper",
   "version": "1.0.0",
   "description": "A basic wrapper to use dynamoDb in Nutshell serverless apps.",
   "main": "index.js",
   "scripts": {
-    "preinstall": "bash scripts/ssh-setup.sh",
-    "postinstall": "bash scripts/ssh-cleanup.sh"
   },
   "keywords": [
     "dynamodb",
