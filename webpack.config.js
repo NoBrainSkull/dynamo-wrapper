@@ -5,7 +5,8 @@ const outputfile = libraryName + '.js'
 
 module.exports = {
   entry: './src/index.js',
-  mode: 'production',
+  mode: 'development',
+  target: 'node',
   externals: [nodeExternals()],
   output: {
     path: path.resolve(__dirname, 'lib'),
