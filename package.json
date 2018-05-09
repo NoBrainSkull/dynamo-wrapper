@@ -2,7 +2,7 @@
   "name": "dynamo-wrapper",
   "version": "1.0.0",
   "description": "A basic wrapper to use dynamoDb in Nutshell serverless apps.",
-  "main": "dist/app.js",
+  "main": "lib/dynamo-wrapper.js",
   "scripts": {
     "build": "webpack --config webpack.config.js"
   },
