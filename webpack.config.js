@@ -1,13 +1,18 @@
 const path = require('path')
 const nodeExternals = require('webpack-node-externals')
+const libraryName = 'dynamo-wrapper'
+const outputfile = libraryName + '.js'
 
 module.exports = {
-  entry: './src',
+  entry: './src/index.js',
   mode: 'production',
   externals: [nodeExternals()],
   output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: 'app.js'
+    path: path.resolve(__dirname, 'lib'),
+    filename: outputfile,
+    library: libraryName,
+    libraryTarget: 'umd',
+    umdNamedDefine: true
   },
   module: {
     rules: [
