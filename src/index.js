@@ -28,14 +28,6 @@ export default class Table {
     })
   }
 
-  findByCompositeId(params = null) {
-    return db.get({
-      TableName: this.name,
-      Key: { ...ids },
-      ...params
-    })
-  }
-
   add(args, params = null) {
     return db.createItem({
       TableName: this.name,
@@ -94,31 +86,38 @@ export default class Table {
 
   static formatUpdateValues({ id, ...val }) {
     return Object.keys(val).reduce(
-      (acc, key) => ({
-        expression: acc.expression.concat(`#${key} = :${key}`),
-        formattedValues: {
-          ...acc.formattedValues,
-          [`:${key}`]: val[key]
-        },
-        formattedNames: {
-          ...acc.formattedNames,
-          [`#${key}`]: key
+      (acc, key) => {
+        if (val[key] === undefined) return acc
+        return {
+          expression: acc.expression.concat(`#${key} = :${key}`),
+          formattedValues: {
+            ...acc.formattedValues,
+            [`:${key}`]: val[key]
+          },
+          formattedNames: {
+            ...acc.formattedNames,
+            [`#${key}`]: key
+          }
         }
-      }),
+      },
       { expression: [], formattedValues: {}, formattedNames: {} }
     )
   }
 
-  static addIdToSubItems(val) {
+  static addIdToSubItems(val, inc = 0) {
     if (!val) return val
-    if (Array.isArray(val)) return val.map(v => Table.addIdToSubItems(v))
-    return __addIdToSubItems(val)
+    if (Array.isArray(val)) {
+      const i = inc + 1
+      return val.map(v => Table.addIdToSubItems(v, i))
+    }
+    return __addIdToSubItems(val, inc)
   }
 }
 
-const __addIdToSubItems = val => {
+const __addIdToSubItems = (val, clockseq) => {
+  if (val.id) return val
   return {
     ...val,
-    id: uuid()
+    id: uuid({ clockseq })
   }
 }
