@@ -42,8 +42,8 @@ export default class Table {
     }, params)
   }
 
-  findIn({ ids, field }, params = null) {
-    const filters = Table.formatArrayValues(ids)
+  findIn({ values, field }, params = null) {
+    const filters = Table.formatArrayValues(values)
     return this.find({
       ExpressionAttributeNames: { '#field': `${field}` },
       FilterExpression: `#field IN (${Object.keys(filters)})`,
