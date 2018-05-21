@@ -59,12 +59,20 @@ export default class Table {
     }, params)
   }
 
+  findContains({ value, field }, params = null) {
+    return this.find({
+      ExpressionAttributeNames: { '#field': `${field}` },
+      FilterExpression: `#field contains :${field}`,
+      ExpressionAttributeValues: { [`:${field}`]: value }
+    }, params)
+  }
+
   add(args, params = null) {
     return db.createItem({
       TableName: this.name,
       Item: {
-        ...args,
-        id: uuid()
+        id: uuid(),
+        ...args
       },
       ...params
     })
