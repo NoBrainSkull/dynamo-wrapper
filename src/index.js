@@ -28,6 +28,37 @@ export default class Table {
     })
   }
 
+  findNotNull({ field }, params = null) {
+    return this.find({
+      ExpressionAttributeNames: { '#field': `${field}` },
+      FilterExpression: 'attribute_exists(#field)'
+    }, params)
+  }
+
+  findNull({ field }, params = null) {
+    return this.find({
+      ExpressionAttributeNames: { '#field': `${field}` },
+      FilterExpression: 'attribute_not_exists(#field)'
+    }, params)
+  }
+
+  findIn({ ids, field }, params = null) {
+    const filters = DynamoTable.formatArrayValues(ids)
+    return this.find({
+      ExpressionAttributeNames: { '#field': `${field}` },
+      FilterExpression: `#field IN (${Object.keys(filters)})`,
+      ExpressionAttributeValues: filters
+    }, params)
+  }
+
+  findBy({ value, field }, params = null) {
+    return this.find({
+      ExpressionAttributeNames: { '#field': `${field}` },
+      FilterExpression: `#field = :${field}`,
+      ExpressionAttributeValues: { [`:${field}`]: value }
+    }, params)
+  }
+
   add(args, params = null) {
     return db.createItem({
       TableName: this.name,
