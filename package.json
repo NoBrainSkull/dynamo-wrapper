@@ -1,6 +1,6 @@
 {
   "name": "@nutshelllab/dynamo-wrapper",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A basic wrapper to use dynamoDb in Nutshell serverless apps.",
   "main": "lib/dynamo-wrapper.js",
   "scripts": {

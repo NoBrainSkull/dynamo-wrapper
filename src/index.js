@@ -43,7 +43,7 @@ export default class Table {
   }
 
   findIn({ ids, field }, params = null) {
-    const filters = DynamoTable.formatArrayValues(ids)
+    const filters = Table.formatArrayValues(ids)
     return this.find({
       ExpressionAttributeNames: { '#field': `${field}` },
       FilterExpression: `#field IN (${Object.keys(filters)})`,
