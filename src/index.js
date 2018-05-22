@@ -6,6 +6,19 @@ export default class Table {
     this.name = name
   }
 
+  add(args, params = null) {
+    let id = {}
+    id = params.idField ? (id[params.idField] = uuid()) : (id['id'] = uuid())
+    return db.createItem({
+      TableName: this.name,
+      Item: {
+        ...id,
+        ...args
+      },
+      ...params
+    })
+  }
+
   query(params = null) {
     return db.query({
       TableName: this.name,
@@ -29,53 +42,57 @@ export default class Table {
   }
 
   findNotNull({ field }, params = null) {
-    return this.find({
-      ExpressionAttributeNames: { '#field': `${field}` },
-      FilterExpression: 'attribute_exists(#field)'
-    }, params)
+    return this.find(
+      {
+        ExpressionAttributeNames: { '#field': `${field}` },
+        FilterExpression: 'attribute_exists(#field)'
+      },
+      params
+    )
   }
 
   findNull({ field }, params = null) {
-    return this.find({
-      ExpressionAttributeNames: { '#field': `${field}` },
-      FilterExpression: 'attribute_not_exists(#field)'
-    }, params)
+    return this.find(
+      {
+        ExpressionAttributeNames: { '#field': `${field}` },
+        FilterExpression: 'attribute_not_exists(#field)'
+      },
+      params
+    )
   }
 
   findIn({ values, field }, params = null) {
     const filters = Table.formatArrayValues(values)
-    return this.find({
-      ExpressionAttributeNames: { '#field': `${field}` },
-      FilterExpression: `#field IN (${Object.keys(filters)})`,
-      ExpressionAttributeValues: filters
-    }, params)
+    return this.find(
+      {
+        ExpressionAttributeNames: { '#field': `${field}` },
+        FilterExpression: `#field IN (${Object.keys(filters)})`,
+        ExpressionAttributeValues: filters
+      },
+      params
+    )
   }
 
   findBy({ value, field }, params = null) {
-    return this.find({
-      ExpressionAttributeNames: { '#field': `${field}` },
-      FilterExpression: `#field = :${field}`,
-      ExpressionAttributeValues: { [`:${field}`]: value }
-    }, params)
+    return this.find(
+      {
+        ExpressionAttributeNames: { '#field': `${field}` },
+        FilterExpression: `#field = :${field}`,
+        ExpressionAttributeValues: { [`:${field}`]: value }
+      },
+      params
+    )
   }
 
   findContains({ value, field }, params = null) {
-    return this.find({
-      ExpressionAttributeNames: { '#field': `${field}` },
-      FilterExpression: `#field contains :${field}`,
-      ExpressionAttributeValues: { [`:${field}`]: value }
-    }, params)
-  }
-
-  add(args, params = null) {
-    return db.createItem({
-      TableName: this.name,
-      Item: {
-        id: uuid(),
-        ...args
+    return this.find(
+      {
+        ExpressionAttributeNames: { '#field': `${field}` },
+        FilterExpression: `#field contains :${field}`,
+        ExpressionAttributeValues: { [`:${field}`]: value }
       },
-      ...params
-    })
+      params
+    )
   }
 
   update(id, params = null) {
