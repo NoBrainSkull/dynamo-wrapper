@@ -11,8 +11,8 @@
     "dynamo",
     "aws"
   ],
-  "author": "red, green, blue",
-  "license": "ISC",
+  "author": "Nutshell <contact@nutshell-lab.com>",
+  "license": "GPL-3.0",
   "devDependencies": {
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.4",
