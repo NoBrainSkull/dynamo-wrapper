@@ -8,7 +8,7 @@ export default class Table {
 
   add(args, params = null) {
     let id = {}
-    id = params.idField ? (id[params.idField] = uuid()) : (id['id'] = uuid())
+    id = params.idField ? (id[params.idField] = params.idValue) : (id['id'] = uuid())
     return db.createItem({
       TableName: this.name,
       Item: {
