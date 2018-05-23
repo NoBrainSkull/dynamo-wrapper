@@ -96,10 +96,14 @@ export default class Table {
   }
 
   update(id, params = null) {
+    let id = {}
+    id = params.idField
+      ? (id[params.idField] = params[params.idField])
+      : (id['id'] = params[params.idField])
     return db.updateItem({
       TableName: this.name,
       Key: {
-        id
+        ...id
       },
       ReturnValues: 'ALL_NEW',
       ...params
