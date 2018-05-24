@@ -6,13 +6,11 @@ export default class Table {
     this.name = name
   }
 
-  add(args, params = null) {
-    let id = {}
-    id = params.idField ? (id[params.idField] = params.idValue) : (id['id'] = uuid())
+  add({ args, params = null, options }) {
     return db.createItem({
       TableName: this.name,
       Item: {
-        ...id,
+        ..._attachPrimaryKey(options),
         ...args
       },
       ...params
@@ -33,102 +31,85 @@ export default class Table {
     })
   }
 
-  findById(id, params = null) {
+  findById(key, params = null) {
     return db.get({
       TableName: this.name,
-      Key: { id },
+      Key: key,
       ...params
     })
   }
 
   findNotNull({ field }, params = null) {
-    return this.find(
-      {
-        ExpressionAttributeNames: { '#field': `${field}` },
-        FilterExpression: 'attribute_exists(#field)'
-      },
-      params
-    )
+    return this.find({
+      ExpressionAttributeNames: { '#field': `${field}` },
+      FilterExpression: 'attribute_exists(#field)',
+      ...params
+    })
   }
 
   findNull({ field }, params = null) {
-    return this.find(
-      {
-        ExpressionAttributeNames: { '#field': `${field}` },
-        FilterExpression: 'attribute_not_exists(#field)'
-      },
-      params
-    )
+    return this.find({
+      ExpressionAttributeNames: { '#field': `${field}` },
+      FilterExpression: 'attribute_not_exists(#field)',
+      ...params
+    })
   }
 
   findIn({ values, field }, params = null) {
     const filters = Table.formatArrayValues(values)
-    return this.find(
-      {
-        ExpressionAttributeNames: { '#field': `${field}` },
-        FilterExpression: `#field IN (${Object.keys(filters)})`,
-        ExpressionAttributeValues: filters
-      },
-      params
-    )
+    return this.find({
+      ExpressionAttributeNames: { '#field': `${field}` },
+      FilterExpression: `#field IN (${Object.keys(filters)})`,
+      ExpressionAttributeValues: filters,
+      ...params
+    })
   }
 
   findBy({ value, field }, params = null) {
-    return this.find(
-      {
-        ExpressionAttributeNames: { '#field': `${field}` },
-        FilterExpression: `#field = :${field}`,
-        ExpressionAttributeValues: { [`:${field}`]: value }
-      },
-      params
-    )
+    return this.find({
+      ExpressionAttributeNames: { '#field': `${field}` },
+      FilterExpression: `#field = :${field}`,
+      ExpressionAttributeValues: { [`:${field}`]: value },
+      ...params
+    })
   }
 
   findContains({ value, field }, params = null) {
-    return this.find(
-      {
-        ExpressionAttributeNames: { '#field': `${field}` },
-        FilterExpression: `#field contains :${field}`,
-        ExpressionAttributeValues: { [`:${field}`]: value }
-      },
-      params
-    )
+    return this.find({
+      ExpressionAttributeNames: { '#field': `${field}` },
+      FilterExpression: `#field contains :${field}`,
+      ExpressionAttributeValues: { [`:${field}`]: value },
+      ...params
+    })
   }
 
-  update(id, params = null) {
-    let id = {}
-    id = params.idField
-      ? (id[params.idField] = params[params.idField])
-      : (id['id'] = params[params.idField])
+  update(key, params = null) {
     return db.updateItem({
       TableName: this.name,
-      Key: {
-        ...id
-      },
+      Key: key,
       ReturnValues: 'ALL_NEW',
       ...params
     })
   }
 
-  updateWithFormat(args) {
+  updateWithFormat(key, args, params = null) {
     const {
       expression,
       formattedValues,
       formattedNames
     } = this.constructor.formatUpdateValues(args)
-    return this.update(args.id, {
+    return this.update(key, {
       ExpressionAttributeNames: formattedNames,
       UpdateExpression: `SET ${expression.join(', ')}`,
-      ExpressionAttributeValues: formattedValues
+      ExpressionAttributeValues: formattedValues,
+      ...params
     })
   }
 
-  remove(args, params = null) {
+  remove(key, params = null) {
     return db.deleteItem({
       TableName: this.name,
-      Key: {
-        id: args.id
-      },
+      Key: key,
       ReturnValues: 'ALL_OLD',
       ...params
     })
@@ -144,7 +125,7 @@ export default class Table {
     )
   }
 
-  static formatUpdateValues({ id, ...val }) {
+  static formatUpdateValues(val) {
     return Object.keys(val).reduce(
       (acc, key) => {
         if (val[key] === undefined) return acc
@@ -180,4 +161,8 @@ const __addIdToSubItems = (val, clockseq) => {
     ...val,
     id: uuid({ clockseq })
   }
+}
+
+const _attachPrimaryKey = options => {
+  if (!options || !options.customPrimaryKey) return { id: uuid() }
 }
