@@ -151,11 +151,11 @@ export default class Table {
       const i = inc + 1
       return val.map(v => Table.addIdToSubItems(v, i))
     }
-    return __addIdToSubItems(val, inc)
+    return _addIdToSubItems(val, inc)
   }
 }
 
-const __addIdToSubItems = (val, clockseq) => {
+const _addIdToSubItems = (val, clockseq) => {
   if (val.id) return val
   return {
     ...val,
