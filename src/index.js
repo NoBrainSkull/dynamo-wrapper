@@ -93,6 +93,7 @@ export default class Table {
   }
 
   updateWithFormat(key, args, params = null) {
+    Object.keys(key).forEach(k => delete args[k])
     const {
       expression,
       formattedValues,
