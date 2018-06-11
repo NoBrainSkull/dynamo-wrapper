@@ -10,6 +10,7 @@ export default class Table {
     return db.createItem({
       TableName: this.name,
       Item: {
+        createdAt: new Date().toJSON(),
         ..._attachPrimaryKey(options),
         ...args
       },
@@ -100,9 +101,15 @@ export default class Table {
       formattedNames
     } = this.constructor.formatUpdateValues(args)
     return this.update(key, {
-      ExpressionAttributeNames: formattedNames,
-      UpdateExpression: `SET ${expression.join(', ')}`,
-      ExpressionAttributeValues: formattedValues,
+      ExpressionAttributeNames: {
+        ...formattedNames,
+        '#updatedAt': 'updatedAt'
+      },
+      UpdateExpression: `SET ${expression.join(', ')}, #updatedAt = :updatedAt`,
+      ExpressionAttributeValues: {
+        ...formattedValues,
+        ':updatedAt': new Date().toJSON()
+      },
       ...params
     })
   }
