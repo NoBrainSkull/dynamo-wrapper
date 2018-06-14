@@ -78,7 +78,7 @@ export default class Table {
   findContains({ value, field }, params = null) {
     return this.find({
       ExpressionAttributeNames: { '#field': `${field}` },
-      FilterExpression: `#field contains :${field}`,
+      FilterExpression: `contains(#field, :${field})`,
       ExpressionAttributeValues: { [`:${field}`]: value },
       ...params
     })
