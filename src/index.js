@@ -11,6 +11,7 @@ export default class Table {
       TableName: this.name,
       Item: {
         createdAt: new Date().toJSON(),
+        updatedAt: new Date().toJSON(),
         ..._attachPrimaryKey(options),
         ...args
       },
