@@ -1,10 +1,8 @@
 import AWSDK from 'aws-sdk'
 
-const dynamoDb = new AWSDK.DynamoDB.DocumentClient()
-
-export function query(params) {
+export function query(params, documentArgs) {
   return new Promise((resolve, reject) =>
-    dynamoDb
+    new AWSDK.DynamoDB.DocumentClient(documentArgs)
       .query(params)
       .promise()
       .then(data => resolve(data.Items))
@@ -12,9 +10,9 @@ export function query(params) {
   )
 }
 
-export function scan(params) {
+export function scan(params, documentArgs) {
   return new Promise((resolve, reject) =>
-    dynamoDb
+    new AWSDK.DynamoDB.DocumentClient(documentArgs)
       .scan(params)
       .promise()
       .then(data => resolve(data.Items))
@@ -22,9 +20,9 @@ export function scan(params) {
   )
 }
 
-export function get(params) {
+export function get(params, documentArgs) {
   return new Promise((resolve, reject) =>
-    dynamoDb
+    new AWSDK.DynamoDB.DocumentClient(documentArgs)
       .get(params)
       .promise()
       .then(data => resolve(data.Item))
@@ -32,9 +30,9 @@ export function get(params) {
   )
 }
 
-export function createItem(params) {
+export function createItem(params, documentArgs) {
   return new Promise((resolve, reject) =>
-    dynamoDb
+    new AWSDK.DynamoDB.DocumentClient(documentArgs)
       .put(params)
       .promise()
       .then(() => resolve(params.Item))
@@ -42,9 +40,9 @@ export function createItem(params) {
   )
 }
 
-export function updateItem(params) {
+export function updateItem(params, documentArgs) {
   return new Promise((resolve, reject) =>
-    dynamoDb
+    new AWSDK.DynamoDB.DocumentClient(documentArgs)
       .update(params)
       .promise()
       .then(data => resolve(data.Attributes))
@@ -52,9 +50,9 @@ export function updateItem(params) {
   )
 }
 
-export function deleteItem(params) {
+export function deleteItem(params, documentArgs) {
   return new Promise((resolve, reject) =>
-    dynamoDb
+    new AWSDK.DynamoDB.DocumentClient(documentArgs)
       .delete(params)
       .promise()
       .then(data => resolve(data.Attributes))

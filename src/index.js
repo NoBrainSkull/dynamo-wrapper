@@ -2,8 +2,11 @@ import uuid from 'uuid/v1'
 import * as db from './dynamo'
 
 export default class Table {
-  constructor(name) {
+  constructor(name, documentArgs) {
     this.name = name
+    this.documentArgs = documentArgs || {
+      convertEmptyValues: true
+    }
   }
 
   add({ args, params = null, options }) {
@@ -16,21 +19,21 @@ export default class Table {
         ...args
       },
       ...params
-    })
+    }, this.documentArgs)
   }
 
   query(params = null) {
     return db.query({
       TableName: this.name,
       ...params
-    })
+    }, this.documentArgs)
   }
 
   find(params = null) {
     return db.scan({
       TableName: this.name,
       ...params
-    })
+    }, this.documentArgs)
   }
 
   findById(key, params = null) {
@@ -38,7 +41,7 @@ export default class Table {
       TableName: this.name,
       Key: key,
       ...params
-    })
+    }, this.documentArgs)
   }
 
   findNotNull({ field }, params = null) {
@@ -91,7 +94,7 @@ export default class Table {
       Key: key,
       ReturnValues: 'ALL_NEW',
       ...params
-    })
+    }, this.documentArgs)
   }
 
   updateWithFormat(key, args, params = null) {
@@ -121,7 +124,7 @@ export default class Table {
       Key: key,
       ReturnValues: 'ALL_OLD',
       ...params
-    })
+    }, this.documentArgs)
   }
 
   static formatArrayValues(values) {
