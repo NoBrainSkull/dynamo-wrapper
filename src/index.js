@@ -10,38 +10,50 @@ export default class Table {
   }
 
   add({ args, params = null, options }) {
-    return db.createItem({
-      TableName: this.name,
-      Item: {
-        createdAt: new Date().toJSON(),
-        updatedAt: new Date().toJSON(),
-        ..._attachPrimaryKey(options),
-        ...args
+    return db.createItem(
+      {
+        TableName: this.name,
+        Item: {
+          createdAt: new Date().toJSON(),
+          updatedAt: new Date().toJSON(),
+          ..._attachPrimaryKey(options),
+          ...args
+        },
+        ...params
       },
-      ...params
-    }, this.documentArgs)
+      this.documentArgs
+    )
   }
 
   query(params = null) {
-    return db.query({
-      TableName: this.name,
-      ...params
-    }, this.documentArgs)
+    return db.query(
+      {
+        TableName: this.name,
+        ...params
+      },
+      this.documentArgs
+    )
   }
 
   find(params = null) {
-    return db.scan({
-      TableName: this.name,
-      ...params
-    }, this.documentArgs)
+    return db.scan(
+      {
+        TableName: this.name,
+        ...params
+      },
+      this.documentArgs
+    )
   }
 
   findById(key, params = null) {
-    return db.get({
-      TableName: this.name,
-      Key: key,
-      ...params
-    }, this.documentArgs)
+    return db.get(
+      {
+        TableName: this.name,
+        Key: key,
+        ...params
+      },
+      this.documentArgs
+    )
   }
 
   findNotNull({ field }, params = null) {
@@ -89,12 +101,15 @@ export default class Table {
   }
 
   update(key, params = null) {
-    return db.updateItem({
-      TableName: this.name,
-      Key: key,
-      ReturnValues: 'ALL_NEW',
-      ...params
-    }, this.documentArgs)
+    return db.updateItem(
+      {
+        TableName: this.name,
+        Key: key,
+        ReturnValues: 'ALL_NEW',
+        ...params
+      },
+      this.documentArgs
+    )
   }
 
   updateWithFormat(key, args, params = null) {
@@ -104,27 +119,33 @@ export default class Table {
       formattedValues,
       formattedNames
     } = this.constructor.formatUpdateValues(args)
+    const UpdateExpression = expression.includes('#updatedAt = :updatedAt')
+      ? `SET ${expression.join(', ')}`
+      : `SET ${expression.join(', ')}, #updatedAt = :updatedAt`
     return this.update(key, {
       ExpressionAttributeNames: {
-        ...formattedNames,
-        '#updatedAt': 'updatedAt'
+        '#updatedAt': 'updatedAt',
+        ...formattedNames
       },
-      UpdateExpression: `SET ${expression.join(', ')}, #updatedAt = :updatedAt`,
+      UpdateExpression,
       ExpressionAttributeValues: {
-        ...formattedValues,
-        ':updatedAt': new Date().toJSON()
+        ':updatedAt': new Date().toJSON(),
+        ...formattedValues
       },
       ...params
     })
   }
 
   remove(key, params = null) {
-    return db.deleteItem({
-      TableName: this.name,
-      Key: key,
-      ReturnValues: 'ALL_OLD',
-      ...params
-    }, this.documentArgs)
+    return db.deleteItem(
+      {
+        TableName: this.name,
+        Key: key,
+        ReturnValues: 'ALL_OLD',
+        ...params
+      },
+      this.documentArgs
+    )
   }
 
   static formatArrayValues(values) {
