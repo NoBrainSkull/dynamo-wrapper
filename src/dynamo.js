@@ -15,7 +15,22 @@ export function scan(params, documentArgs) {
     new AWSDK.DynamoDB.DocumentClient(documentArgs)
       .scan(params)
       .promise()
-      .then(data => resolve(data.Items))
+      .then(
+        async data =>
+          data.LastEvaluatedKey
+            ? resolve(
+                data.Items.concat(
+                  await scan(
+                    {
+                      ...params,
+                      ExclusiveStartKey: data.LastEvaluatedKey
+                    },
+                    documentArgs
+                  )
+                )
+              )
+            : resolve(data.Items)
+      )
       .catch(err => reject(err))
   )
 }
