@@ -6,7 +6,7 @@ export function query(params, documentArgs) {
       .query(params)
       .promise()
       .then(data => resolve(data.Items))
-      .catch(err => reject(err))
+      .catch(error => reject(error))
   )
 }
 
@@ -15,23 +15,22 @@ export function scan(params, documentArgs) {
     new AWSDK.DynamoDB.DocumentClient(documentArgs)
       .scan(params)
       .promise()
-      .then(
-        async data =>
-          data.LastEvaluatedKey
-            ? resolve(
-                data.Items.concat(
-                  await scan(
-                    {
-                      ...params,
-                      ExclusiveStartKey: data.LastEvaluatedKey
-                    },
-                    documentArgs
-                  )
+      .then(async data =>
+        data.LastEvaluatedKey
+          ? resolve(
+              data.Items.concat(
+                await scan(
+                  {
+                    ...params,
+                    ExclusiveStartKey: data.LastEvaluatedKey
+                  },
+                  documentArgs
                 )
               )
-            : resolve(data.Items)
+            )
+          : resolve(data.Items)
       )
-      .catch(err => reject(err))
+      .catch(error => reject(error))
   )
 }
 
@@ -41,7 +40,7 @@ export function get(params, documentArgs) {
       .get(params)
       .promise()
       .then(data => resolve(data.Item))
-      .catch(err => reject(err))
+      .catch(error => reject(error))
   )
 }
 
@@ -51,7 +50,7 @@ export function createItem(params, documentArgs) {
       .put(params)
       .promise()
       .then(() => resolve(params.Item))
-      .catch(err => reject(err))
+      .catch(error => reject(error))
   )
 }
 
@@ -61,7 +60,7 @@ export function updateItem(params, documentArgs) {
       .update(params)
       .promise()
       .then(data => resolve(data.Attributes))
-      .catch(err => reject(err))
+      .catch(error => reject(error))
   )
 }
 
@@ -71,6 +70,6 @@ export function deleteItem(params, documentArgs) {
       .delete(params)
       .promise()
       .then(data => resolve(data.Attributes))
-      .catch(err => reject(err))
+      .catch(error => reject(error))
   )
 }

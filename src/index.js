@@ -25,6 +25,24 @@ export default class Table {
     )
   }
 
+  async put(key, args, params = null) {
+    const item = await this.findById(key, params)
+    return db.createItem(
+      {
+        TableName: this.name,
+        Item: {
+          ...item,
+          ..._attachCreatedAt(item),
+          updatedAt: new Date().toJSON(),
+          ...key,
+          ...args
+        },
+        ...params
+      },
+      this.documentArgs
+    )
+  }
+
   query(params = null) {
     return db.query(
       {
@@ -199,3 +217,10 @@ const _addIdToSubItems = (val, clockseq) => {
 const _attachPrimaryKey = options => {
   if (!options || !options.customPrimaryKey) return { id: uuid() }
 }
+
+const _attachCreatedAt = item =>
+  item
+    ? {}
+    : {
+        createdAt: new Date().toJSON()
+      }
