@@ -74,6 +74,25 @@ export default class Table {
     )
   }
 
+  findByIndex(index, key, params = null) {
+    const {
+      expression,
+      formattedValues,
+      formattedNames
+    } = this.constructor.formatValues(key)
+    return db.query(
+      {
+        TableName: this.name,
+        IndexName: index,
+        KeyConditionExpression: `${expression.join(', ')}`,
+        ExpressionAttributeNames: formattedNames,
+        ExpressionAttributeValues: formattedValues,
+        ...params
+      },
+      this.documentArgs
+    )
+  }
+
   findNotNull({ field }, params = null) {
     return this.find({
       ExpressionAttributeNames: { '#field': `${field}` },
@@ -136,7 +155,7 @@ export default class Table {
       expression,
       formattedValues,
       formattedNames
-    } = this.constructor.formatUpdateValues(args)
+    } = this.constructor.formatValues(args)
     const UpdateExpression = expression.includes('#updatedAt = :updatedAt')
       ? `SET ${expression.join(', ')}`
       : `SET ${expression.join(', ')}, #updatedAt = :updatedAt`
@@ -176,7 +195,7 @@ export default class Table {
     )
   }
 
-  static formatUpdateValues(val) {
+  static formatValues(val) {
     return Object.keys(val).reduce(
       (acc, key) => {
         if (val[key] === undefined) return acc
