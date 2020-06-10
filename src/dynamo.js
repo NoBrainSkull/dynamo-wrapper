@@ -9,7 +9,22 @@ export function query(params, documentArgs, options = {}) {
         if(options.verbose) console.log('query:', data)
         return data
       })
-      .then(data => resolve(data.Items))
+      .then(async data =>
+        data.LastEvaluatedKey
+          ? resolve(
+              data.Items.concat(
+                await query(
+                  {
+                    ...params,
+                    ExclusiveStartKey: data.LastEvaluatedKey
+                  },
+                  documentArgs,
+                  options
+                )
+              )
+            )
+          : resolve(data.Items)
+      )
       .catch(error => reject(error))
   )
 }
@@ -32,7 +47,8 @@ export function scan(params, documentArgs, options = {}) {
                     ...params,
                     ExclusiveStartKey: data.LastEvaluatedKey
                   },
-                  documentArgs
+                  documentArgs,
+                  options
                 )
               )
             )
