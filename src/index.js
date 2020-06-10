@@ -2,11 +2,12 @@ import uuid from 'uuid/v1'
 import * as db from './dynamo'
 
 export default class Table {
-  constructor(name, documentArgs) {
+  constructor(name, documentArgs, options) {
     this.name = name
     this.documentArgs = documentArgs || {
       convertEmptyValues: true
     }
+    this.options = options
   }
 
   add({ args, params = null, options }) {
@@ -21,7 +22,8 @@ export default class Table {
         },
         ...params
       },
-      this.documentArgs
+      this.documentArgs,
+      this.options
     )
   }
 
@@ -39,7 +41,8 @@ export default class Table {
         },
         ...params
       },
-      this.documentArgs
+      this.documentArgs,
+      this.options
     )
   }
 
@@ -49,7 +52,8 @@ export default class Table {
         TableName: this.name,
         ...params
       },
-      this.documentArgs
+      this.documentArgs,
+      this.options
     )
   }
 
@@ -59,7 +63,8 @@ export default class Table {
         TableName: this.name,
         ...params
       },
-      this.documentArgs
+      this.documentArgs,
+      this.options
     )
   }
 
@@ -70,7 +75,8 @@ export default class Table {
         Key: key,
         ...params
       },
-      this.documentArgs
+      this.documentArgs,
+      this.options
     )
   }
 
@@ -89,7 +95,8 @@ export default class Table {
         ExpressionAttributeValues: formattedValues,
         ...params
       },
-      this.documentArgs
+      this.documentArgs,
+      this.options
     )
   }
 
@@ -145,7 +152,8 @@ export default class Table {
         ReturnValues: 'ALL_NEW',
         ...params
       },
-      this.documentArgs
+      this.documentArgs,
+      this.options
     )
   }
 
@@ -181,7 +189,8 @@ export default class Table {
         ReturnValues: 'ALL_OLD',
         ...params
       },
-      this.documentArgs
+      this.documentArgs,
+      this.options
     )
   }
 
